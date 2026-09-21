@@ -1,0 +1,46 @@
+{
+  "name": "KrishiMitra AI - Smart Farmer Decision Support App",
+  "short_name": "KrishiMitra",
+  "description": "AI-Powered Smart Agriculture & Daily Farmer Decision Support Ecosystem",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#020617",
+  "theme_color": "#052e16",
+  "categories": ["agriculture", "productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Leaf Disease Scanner",
+      "short_name": "Scan Leaf",
+      "description": "Scan crop leaves for AI pathogen diagnosis",
+      "url": "/disease",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "Mandi Arbitrage Rates",
+      "short_name": "Mandi Rates",
+      "description": "Real-time APMC price feeds and transport net realization",
+      "url": "/market",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "FarmTalk Voice AI",
+      "short_name": "Voice Assistant",
+      "description": "Multilingual AI agronomy assistant",
+      "url": "/farmtalk",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    }
+  ]
+}
+

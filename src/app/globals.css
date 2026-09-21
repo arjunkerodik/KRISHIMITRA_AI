@@ -1,0 +1,334 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", Consolas, "Courier New", monospace;
+  --font-display: var(--font-display), "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-title: var(--font-title), "Outfit", "Poppins", sans-serif;
+
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 38px;
+  --text-4xl: 38px;
+  --text-4xl--line-height: 46px;
+
+  /* Agricultural Green Palette */
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+  --color-brand-950: #052e16;
+
+  /* Earth / Warm Stone */
+  --color-earth-50: #fbf8f3;
+  --color-earth-100: #f5ede0;
+  --color-earth-200: #e8d7be;
+  --color-earth-300: #d4b993;
+  --color-earth-400: #b79563;
+  --color-earth-500: #8a6d3b;
+  --color-earth-600: #755b30;
+  --color-earth-700: #634d28;
+  --color-earth-800: #513e20;
+  --color-earth-900: #433318;
+
+  /* Sky / Weather Blue */
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #0284c7;
+  --color-sky-700: #0369a1;
+  --color-sky-800: #075985;
+  --color-sky-900: #0c4a6e;
+
+  /* Alert / Warning Orange-Yellow */
+  --color-alert-50: #fffbeb;
+  --color-alert-100: #fef3c7;
+  --color-alert-200: #fde68a;
+  --color-alert-300: #fcd34d;
+  --color-alert-400: #fbbf24;
+  --color-alert-500: #f59e0b;
+  --color-alert-600: #d97706;
+  --color-alert-700: #b45309;
+  --color-alert-800: #92400e;
+  --color-alert-900: #78350f;
+
+  /* Danger Red */
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+
+  /* Clean Slate Neutrals */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+  --color-neutral-950: #020617;
+}
+
+:root {
+  --bg-primary: rgba(0, 0, 0, 0.5);
+  --bg-secondary: rgba(0, 0, 0, 0.7);
+  --bg-card: rgba(0, 0, 0, 0.48);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.82);
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --border-color: rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.dark {
+  --bg-primary: rgba(0, 0, 0, 0.6);
+  --bg-secondary: rgba(0, 0, 0, 0.8);
+  --bg-card: rgba(0, 0, 0, 0.55);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.82);
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --border-color: rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+body {
+  background-color: transparent !important;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* PWA App Form & Mobile Responsive Safe Area Helpers */
+.pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.pb-safe {
+  padding-bottom: max(5rem, calc(4rem + env(safe-area-inset-bottom)));
+}
+
+.min-h-app {
+  min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+/* Mobile Touch Optimization */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Modern Clean Black Transparent Glass Card Utilities */
+.saas-card,
+.glass-card {
+  background-color: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.saas-card:hover,
+.glass-card:hover {
+  background-color: rgba(0, 0, 0, 0.55);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Accessible focus styling */
+:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.45);
+}
+
+/* Subtle Scanner Animation for Disease Scan */
+@keyframes scanline {
+  0% { top: 0%; opacity: 0.8; }
+  50% { top: 96%; opacity: 1; }
+  100% { top: 0%; opacity: 0.8; }
+}
+
+.animate-scanline {
+  animation: scanline 2.2s ease-in-out infinite;
+}
+
+/* Audio wave animation */
+@keyframes soundwave {
+  0%, 100% { height: 6px; }
+  50% { height: 24px; }
+}
+
+.wave-bar:nth-child(1) { animation: soundwave 1s ease-in-out infinite 0.1s; }
+.wave-bar:nth-child(2) { animation: soundwave 1.2s ease-in-out infinite 0.2s; }
+.wave-bar:nth-child(3) { animation: soundwave 0.9s ease-in-out infinite 0.3s; }
+.wave-bar:nth-child(4) { animation: soundwave 1.3s ease-in-out infinite 0.15s; }
+.wave-bar:nth-child(5) { animation: soundwave 1.1s ease-in-out infinite 0.25s; }
+
+/* ============================================================
+   LIVING NATURE & FLYING BIRDS ANIMATIONS
+   ============================================================ */
+
+@keyframes natureSubtlePan {
+  0% { transform: scale(1.02) translate(0px, 0px); }
+  50% { transform: scale(1.05) translate(-6px, -3px); }
+  100% { transform: scale(1.02) translate(0px, 0px); }
+}
+
+.animate-nature-subtle-pan {
+  animation: natureSubtlePan 24s ease-in-out infinite;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 35s linear infinite;
+}
+
+@keyframes birdWingFlap {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.25) translateY(4px);
+  }
+}
+
+.animate-bird-wing-flap {
+  animation: birdWingFlap 0.75s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.animate-bird-wing-flap-fast {
+  animation: birdWingFlap 0.58s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes birdFlight1 {
+  0% {
+    left: -10%;
+    transform: translateY(0px) rotate(2deg) scale(0.9);
+  }
+  25% {
+    transform: translateY(-22px) rotate(-3deg) scale(0.95);
+  }
+  50% {
+    transform: translateY(8px) rotate(3deg) scale(1);
+  }
+  75% {
+    transform: translateY(-16px) rotate(-2deg) scale(0.95);
+  }
+  100% {
+    left: 110%;
+    transform: translateY(5px) rotate(1deg) scale(0.9);
+  }
+}
+
+.animate-bird-flight-1 {
+  animation: birdFlight1 22s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes birdFlight2 {
+  0% {
+    left: -15%;
+    transform: translateY(10px) rotate(3deg) scale(0.8);
+  }
+  30% {
+    transform: translateY(-30px) rotate(-4deg) scale(0.85);
+  }
+  60% {
+    transform: translateY(12px) rotate(2deg) scale(0.8);
+  }
+  75% {
+    transform: translateY(-18px) rotate(-1deg) scale(0.82);
+  }
+  100% {
+    left: 115%;
+    transform: translateY(-5px) rotate(2deg) scale(0.8);
+  }
+}
+
+.animate-bird-flight-2 {
+  animation: birdFlight2 26s cubic-bezier(0.4, 0, 0.2, 1) 3.5s infinite;
+}
+
+@keyframes birdFlight3 {
+  0% {
+    left: -12%;
+    transform: translateY(0px) rotate(-2deg) scale(0.65);
+  }
+  40% {
+    transform: translateY(18px) rotate(2deg) scale(0.7);
+  }
+  75% {
+    transform: translateY(-14px) rotate(-3deg) scale(0.68);
+  }
+  100% {
+    left: 112%;
+    transform: translateY(0px) rotate(0deg) scale(0.65);
+  }
+}
+
+.animate-bird-flight-3 {
+  animation: birdFlight3 32s linear 11s infinite;
+}

@@ -1,0 +1,32 @@
+[debug] [2026-09-21T18:40:37.802Z] ----------------------------------------------------------------------
+[debug] [2026-09-21T18:40:37.808Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\arjun\AppData\Local\npm-cache\_npx\ba4f1959e38407b5\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2026-09-21T18:40:37.808Z] CLI Version:   15.30.2
+[debug] [2026-09-21T18:40:37.809Z] Platform:      win32
+[debug] [2026-09-21T18:40:37.809Z] Node Version:  v24.11.0
+[debug] [2026-09-21T18:40:37.809Z] Detected Agent: unknown
+[debug] [2026-09-21T18:40:37.810Z] Time:          Tue Sep 22 2026 00:10:37 GMT+0530 (India Standard Time)
+[debug] [2026-09-21T18:40:37.810Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-09-21T18:41:32.929Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-09-21T18:41:32.930Z] > authorizing via signed-in user (arjunkerodi06@gmail.com)
+[debug] [2026-09-21T18:41:32.930Z] [iam] checking project krishimitra for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-09-21T18:41:32.953Z] Checked if tokens are valid: true, expires at: 1790019619542
+[debug] [2026-09-21T18:41:32.953Z] Checked if tokens are valid: true, expires at: 1790019619542
+[debug] [2026-09-21T18:41:32.955Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/krishimitra:testIamPermissions [none]
+[debug] [2026-09-21T18:41:32.956Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/krishimitra:testIamPermissions  x-goog-user-project=krishimitra
+[debug] [2026-09-21T18:41:32.956Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/krishimitra:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-09-21T18:41:34.727Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/krishimitra:testIamPermissions 400
+[debug] [2026-09-21T18:41:34.728Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/krishimitra:testIamPermissions {"error":{"code":400,"message":"Project 'projects/krishimitra' not found or deleted.","status":"INVALID_ARGUMENT","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"USER_PROJECT_DENIED","domain":"googleapis.com","metadata":{"service":"cloudresourcemanager.googleapis.com","consumer":"projects/krishimitra","containerInfo":"projects/krishimitra"}}]}}
+[debug] [2026-09-21T18:41:34.729Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/krishimitra:testIamPermissions had HTTP Error: 400, Project 'projects/krishimitra' not found or deleted.
+[debug] [2026-09-21T18:41:34.729Z] Checked if tokens are valid: true, expires at: 1790019619542
+[debug] [2026-09-21T18:41:34.730Z] Checked if tokens are valid: true, expires at: 1790019619542
+[debug] [2026-09-21T18:41:34.730Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/krishimitra [none]
+[debug] [2026-09-21T18:41:35.729Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/krishimitra 403
+[debug] [2026-09-21T18:41:35.729Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/krishimitra {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2026-09-21T18:41:35.730Z] Request to https://firebase.googleapis.com/v1beta1/projects/krishimitra had HTTP Error: 403, The caller does not have permission
+[debug] [2026-09-21T18:41:36.015Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/krishimitra had HTTP Error: 403, The caller does not have permission
+    at responseToError (C:\Users\arjun\AppData\Local\npm-cache\_npx\ba4f1959e38407b5\node_modules\firebase-tools\lib\responseToError.js:53:12)
+    at RetryOperation._fn (C:\Users\arjun\AppData\Local\npm-cache\_npx\ba4f1959e38407b5\node_modules\firebase-tools\lib\apiv2.js:415:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to get Firebase project krishimitra. Please make sure the project exists and your account has permission to access it.

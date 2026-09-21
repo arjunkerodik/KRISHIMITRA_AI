@@ -1,0 +1,33 @@
+{
+  "packageId": "com.krishimitra.ai",
+  "host": "krishimitra-ai.vercel.app",
+  "name": "KrishiMitra AI - Smart Farmer Support App",
+  "launcherName": "KrishiMitra",
+  "display": "standalone",
+  "themeColor": "#052E16",
+  "navigationColor": "#020617",
+  "backgroundColor": "#020617",
+  "enableNotifications": true,
+  "startUrl": "/dashboard",
+  "iconUrl": "/favicon.ico",
+  "splashScreenFadeOutDuration": 300,
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Leaf Disease Scanner",
+      "shortName": "Scanner",
+      "url": "/disease",
+      "icon": "/favicon.ico"
+    },
+    {
+      "name": "Mandi Arbitrage Rates",
+      "shortName": "Mandi Rates",
+      "url": "/market",
+      "icon": "/favicon.ico"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "/manifest.json",
+  "fallbackType": "customtabs"
+}

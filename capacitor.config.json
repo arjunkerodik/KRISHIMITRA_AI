@@ -1,0 +1,9 @@
+{
+  "appId": "com.krishimitra.ai",
+  "appName": "KrishiMitra AI",
+  "webDir": "out",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
