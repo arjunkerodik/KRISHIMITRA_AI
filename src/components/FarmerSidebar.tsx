@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/lib/store";
 import {
+  Bell,
   LayoutDashboard,
   Tractor,
   Sparkles,
@@ -35,44 +36,46 @@ interface SidebarProps {
 
 export const FarmerSidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const pathname = usePathname();
-  const { activeFarm, farms, setActiveFarmId, creditsBalance, farmerStreak, t } = useApp();
+  const { activeFarm, farms, setActiveFarmId, creditsBalance, farmerStreak, role, t } = useApp();
 
   const navigationSections = [
     {
-      title: `// ${t.sectors?.fieldTelemetry || "FIELD TELEMETRY & PLOTS"}`,
+      title: t.sectors?.fieldTelemetry || "MY FARM & CROPS",
       items: [
-        { href: "/dashboard", label: t.nav?.digitalTwin || "Digital Twin", icon: LayoutDashboard },
-        { href: "/crops", label: t.nav?.cropAdvisor || "Standing Crops", icon: Tractor },
+        { href: "/dashboard", label: t.nav?.digitalTwin || "My Farm", icon: LayoutDashboard },
+        { href: "/crops", label: t.nav?.cropAdvisor || "My Crop", icon: Tractor },
         { href: "/crop-calendar", label: t.nav?.cropCalendar || "Field Plan", icon: CalendarDays },
-        { href: "/disease", label: t.nav?.diseaseScanner || "Pathology Scanner", icon: ScanLine },
+        { href: "/disease", label: t.nav?.diseaseScanner || "Crop Scanner", icon: ScanLine },
         { href: "/weather", label: t.nav?.weather || "Weather Radar", icon: CloudSun },
         { href: "/soil", label: t.nav?.soilHealth || "Soil Health Card", icon: Layers },
       ],
     },
     {
-      title: `// ${t.sectors?.mandisEconomics || "MANDIS & ECONOMICS"}`,
+      title: t.sectors?.mandisEconomics || "MARKET & SCHEMES",
       items: [
         { href: "/market", label: t.nav?.market || "APMC Mandi Rates", icon: Store },
-        { href: "/schemes", label: t.nav?.schemes || "Govt Schemes (DBT)", icon: Landmark },
-        { href: "/marketplace", label: t.nav?.marketplace || "Verified Inputs", icon: ShoppingBag },
+        { href: "/schemes", label: t.nav?.schemes || "Govt Schemes", icon: Landmark },
+        { href: "/marketplace", label: t.nav?.marketplace || "Agri Inputs", icon: ShoppingBag },
         { href: "/offers", label: t.schemes?.subsidy || "Subsidies & Offers", icon: Tag },
         { href: "/orders", label: t.marketplace?.orderNow || "Order Tracking", icon: Package },
       ],
     },
     {
-      title: `// ${t.sectors?.loyaltyRewards || "LOYALTY & REWARDS"}`,
+      title: t.sectors?.loyaltyRewards || "REWARDS & WALLET",
       items: [
         { href: "/credits", label: `${t.nav?.credits || "Credits"} (${creditsBalance} 🪙)`, icon: Coins },
         { href: "/rewards", label: t.credits?.redeemVoucher || "Rewards Catalog", icon: Gift },
       ],
     },
     {
-      title: `// ${t.sectors?.governanceAi || "GOVERNANCE & AI"}`,
+      title: t.sectors?.governanceAi || "MORE OPTIONS",
       items: [
-        { href: "/farmtalk", label: t.nav?.farmtalk || "FarmTalk AI", icon: Bot, highlight: true },
-        { href: "/transparency", label: t.nav?.transparency || "Data Provenance", icon: Scale },
-        { href: "/admin", label: t.nav?.admin || "Governance Desk", icon: Shield },
-        { href: "/settings", label: t.nav?.settings || "Profile & KYC", icon: Settings },
+        { href: "/farmtalk", label: t.nav?.farmtalk || "Ask AI (FarmTalk)", icon: Bot, highlight: true },
+        { href: "/alerts", label: t.nav?.alerts || "SMS Alerts", icon: Bell },
+        { href: "/settings", label: t.nav?.settings || "Profile & Settings", icon: Settings },
+        ...(role === "admin"
+          ? [{ href: "/admin", label: t.nav?.admin || "Admin Desk", icon: Shield }]
+          : []),
       ],
     },
   ];
@@ -88,7 +91,7 @@ export const FarmerSidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       {/* Active Farm Switcher Header */}
       <div className="p-4 border-b border-slate-800/70">
         <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-1.5">
-          {"// Active Farm Sector"}
+          My Selected Farm
         </label>
         <div className="relative">
           <select
@@ -170,10 +173,10 @@ export const FarmerSidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-slate-300">
           <div className="flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-[10px] font-mono font-bold text-emerald-300">Sovereign Data Verified</span>
+            <span className="text-[10px] font-mono font-bold text-emerald-300">Verified Data</span>
           </div>
           <p className="text-[9px] font-mono text-slate-400 mt-0.5">
-            myScheme • AGMARKNET • IMD WMO
+            Verified by IMD / AGMARKNET / myScheme
           </p>
         </div>
       </div>

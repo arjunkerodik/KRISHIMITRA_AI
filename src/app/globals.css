@@ -332,3 +332,103 @@ h1, h2, h3, h4, h5, h6 {
 .animate-bird-flight-3 {
   animation: birdFlight3 32s linear 11s infinite;
 }
+
+/* ============================================================
+   LOW-LITERACY UX — ACCESSIBILITY & TOUCH TARGETS
+   ============================================================ */
+
+/* WCAG 2.5.5 — minimum 48×48px touch targets for all interactive elements */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Semantic status colors — icon-first mode uses these instead of raw numbers */
+.status-green {
+  background-color: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.status-yellow {
+  background-color: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.status-red {
+  background-color: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+/* ============================================================
+   SKELETON LOADERS — OFFLINE / LOADING STATES
+   ============================================================ */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+.skeleton-text {
+  height: 0.75rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+  height: 1.25rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-card {
+  height: 120px;
+  border-radius: 1rem;
+}
+
+/* ============================================================
+   VOICE / MIC FAB — large persistent mic button
+   ============================================================ */
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(52, 211, 153, 0); }
+}
+
+.mic-fab-active {
+  animation: micPulse 1.6s ease-in-out infinite;
+}
+
+/* ============================================================
+   OFFLINE BANNER
+   ============================================================ */
+
+.offline-badge {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FarmerSidebar } from "@/components/FarmerSidebar";
 import { useApp } from "@/lib/store";
 import { FarmerOrder } from "@/lib/services/marketplaceService";
+import { WhatsAppBotSimulator } from "@/components/WhatsAppBotSimulator";
 import {
   ShoppingBag,
   Package,
@@ -290,6 +291,17 @@ export default function OrdersPage() {
               );
             })
           )}
+        </div>
+
+        {/* WhatsApp Order-Status Bot */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
+              WhatsApp &amp; SMS Bot
+            </span>
+            <span className="text-xs text-white/60">Track orders on basic phones too</span>
+          </div>
+          <WhatsAppBotSimulator />
         </div>
 
       </div>

@@ -1,8 +1,8 @@
 {
-  "name": "KrishiMitra AI - Smart Farmer Decision Support App",
+  "name": "KrishiMitra AI - Smart Farm Companion",
   "short_name": "KrishiMitra",
-  "description": "AI-Powered Smart Agriculture & Daily Farmer Decision Support Ecosystem",
-  "start_url": "/dashboard",
+  "description": "Smart agricultural companion for farmers — mandi prices, crop advice, weather alerts & govt schemes.",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
@@ -13,34 +13,44 @@
   "dir": "ltr",
   "icons": [
     {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon",
-      "purpose": "any maskable"
+      "type": "image/x-icon"
     }
   ],
   "shortcuts": [
     {
-      "name": "Leaf Disease Scanner",
-      "short_name": "Scan Leaf",
-      "description": "Scan crop leaves for AI pathogen diagnosis",
+      "name": "Scan Crop for Disease",
+      "short_name": "Scan Crop",
+      "description": "Take a photo of your crop leaf for AI disease check",
       "url": "/disease",
-      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Mandi Arbitrage Rates",
-      "short_name": "Mandi Rates",
-      "description": "Real-time APMC price feeds and transport net realization",
+      "name": "Today's Mandi Prices",
+      "short_name": "Mandi Prices",
+      "description": "Live APMC mandi rates for your crop",
       "url": "/market",
-      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "FarmTalk Voice AI",
-      "short_name": "Voice Assistant",
-      "description": "Multilingual AI agronomy assistant",
+      "name": "Ask FarmTalk AI",
+      "short_name": "Ask AI",
+      "description": "Ask any farm question in Kannada, Hindi or English",
       "url": "/farmtalk",
-      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
-

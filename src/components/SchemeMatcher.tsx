@@ -30,6 +30,88 @@ import {
   ChevronUp,
 } from "lucide-react";
 
+// ── Eligibility engine ────────────────────────────────────────
+
+interface FarmerSnapshot {
+  landAcres?: number;
+  state?: string;
+  district?: string;
+  primaryCrops?: string[];
+  soilType?: string;
+  irrigationType?: string;
+  socialCategory?: string; // sc | st | obc | general
+  ownershipType?: string;  // owned | leased
+}
+
+interface EligibilityResult {
+  status: "eligible" | "check-details" | "not-eligible";
+  reason: string;
+}
+
+function computeEligibility(
+  scheme: VerifiedGovtScheme,
+  farmer: FarmerSnapshot
+): EligibilityResult {
+  const mc = scheme.matchCriteria;
+  if (!mc || Object.keys(mc).length === 0) {
+    return { status: "check-details", reason: "Eligibility not yet available — check with your nearest CSC" };
+  }
+
+  // Land size checks
+  if (mc.maxLandAcres !== undefined && farmer.landAcres !== undefined) {
+    if (farmer.landAcres > mc.maxLandAcres) {
+      return {
+        status: "not-eligible",
+        reason: `Requires land under ${mc.maxLandAcres} acres — your farm is ${farmer.landAcres} acres`,
+      };
+    }
+  }
+  if (mc.minLandAcres !== undefined && farmer.landAcres !== undefined) {
+    if (farmer.landAcres < mc.minLandAcres) {
+      return {
+        status: "not-eligible",
+        reason: `Requires at least ${mc.minLandAcres} acres — your farm is ${farmer.landAcres} acres`,
+      };
+    }
+  }
+
+  // State eligibility
+  if (mc.eligibleStates && mc.eligibleStates.length > 0 && farmer.state) {
+    const statesLower = mc.eligibleStates.map((s: string) => s.toLowerCase());
+    if (!statesLower.includes(farmer.state.toLowerCase()) && !statesLower.includes("all india")) {
+      return {
+        status: "not-eligible",
+        reason: `Only available in: ${mc.eligibleStates.join(", ")}`,
+      };
+    }
+  }
+
+  // Crop type eligibility
+  if (mc.eligibleCrops && mc.eligibleCrops.length > 0 && farmer.primaryCrops?.length) {
+    const farmerCropsLower = farmer.primaryCrops.map((c) => c.toLowerCase());
+    const eligibleCropsLower = mc.eligibleCrops.map((c: string) => c.toLowerCase());
+    const hasMatch = farmerCropsLower.some((c) => eligibleCropsLower.includes(c));
+    if (!hasMatch) {
+      return {
+        status: "not-eligible",
+        reason: `Scheme is for: ${mc.eligibleCrops.slice(0, 3).join(", ")}`,
+      };
+    }
+  }
+
+  // All available checks passed — likely eligible
+  const positives: string[] = [];
+  if (farmer.landAcres && mc.maxLandAcres) positives.push(`farm size qualifies (<${mc.maxLandAcres} acres)`);
+  if (farmer.state) positives.push(`in eligible state`);
+
+  return {
+    status: "eligible",
+    reason: positives.length > 0
+      ? `You likely qualify — ${positives[0]}. Confirm at your nearest CSC/agri office.`
+      : `You may qualify. Confirm eligibility at your nearest CSC or agri office.`,
+  };
+}
+
 export const SchemeMatcher: React.FC = () => {
   const { activeFarm, showToast, awardCredits } = useApp();
   const [filterCategory, setFilterCategory] = useState<string>("All");
@@ -37,6 +119,16 @@ export const SchemeMatcher: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedSchemeForApply, setSelectedSchemeForApply] = useState<VerifiedGovtScheme | null>(null);
   const [expandedSchemeId, setExpandedSchemeId] = useState<string | null>(null);
+
+  // Build farmer snapshot from the active farm & profile
+  const farmerSnapshot: FarmerSnapshot = {
+    landAcres: activeFarm?.areaAcres,
+    state: activeFarm?.state,
+    district: activeFarm?.district,
+    primaryCrops: activeFarm?.currentCrop ? [activeFarm.currentCrop] : [],
+    soilType: activeFarm?.soilType,
+    irrigationType: activeFarm?.irrigationType,
+  };
 
   const categories = [
     "All",
@@ -54,7 +146,7 @@ export const SchemeMatcher: React.FC = () => {
   const levels = ["All", "Central", "State"];
 
   // Filter schemes
-  const filteredSchemes = VERIFIED_GOVERNMENT_SCHEMES.filter((scheme) => {
+  const textFiltered = VERIFIED_GOVERNMENT_SCHEMES.filter((scheme) => {
     const matchesCategory =
       filterCategory === "All" || scheme.category === filterCategory;
     const matchesLevel =
@@ -68,6 +160,19 @@ export const SchemeMatcher: React.FC = () => {
 
     return matchesCategory && matchesLevel && matchesSearch;
   });
+
+  // Compute eligibility and sort: eligible → check-details → not-eligible
+  const ORDER = { eligible: 0, "check-details": 1, "not-eligible": 2 };
+  const filteredSchemes = textFiltered
+    .map((scheme) => ({
+      scheme,
+      eligibility: computeEligibility(scheme, farmerSnapshot),
+    }))
+    .sort((a, b) => ORDER[a.eligibility.status] - ORDER[b.eligibility.status]);
+
+  const eligibleCount = filteredSchemes.filter((s) => s.eligibility.status === "eligible").length;
+  const checkDetailsCount = filteredSchemes.filter((s) => s.eligibility.status === "check-details").length;
+
 
   const handleOpenOfficialApplyModal = (scheme: VerifiedGovtScheme) => {
     setSelectedSchemeForApply(scheme);
@@ -92,7 +197,31 @@ export const SchemeMatcher: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      
+
+      {/* ELIGIBILITY SUMMARY BANNER */}
+      {farmerSnapshot.landAcres && (eligibleCount > 0 || checkDetailsCount > 0) && (
+        <div className="bg-emerald-950/60 border border-emerald-500/40 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex-1">
+            <p className="text-sm font-bold text-emerald-300 flex items-center gap-2">
+              <Landmark className="w-4 h-4" />
+              You may qualify for {eligibleCount + checkDetailsCount} scheme{eligibleCount + checkDetailsCount !== 1 ? "s" : ""}
+            </p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {eligibleCount > 0 && (
+                <span className="text-emerald-400 font-medium">{eligibleCount} likely eligible · </span>
+              )}
+              {checkDetailsCount > 0 && (
+                <span className="text-amber-400">{checkDetailsCount} need confirmation · </span>
+              )}
+              <span>Verify at your nearest CSC or agri office before applying.</span>
+            </p>
+          </div>
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 shrink-0 self-start sm:self-center">
+            Based on your farm profile
+          </span>
+        </div>
+      )}
+
       {/* 1. CONTROLS: SEARCH, CATEGORIES & LEVEL FILTERS */}
       <div className="bg-black/50 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl text-white space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
@@ -207,18 +336,31 @@ export const SchemeMatcher: React.FC = () => {
             </button>
           </div>
         ) : (
-          filteredSchemes.map((scheme) => {
+          filteredSchemes.map(({ scheme, eligibility }) => {
             const isExpanded = expandedSchemeId === scheme.id;
+
+            const eligibilityBadge =
+              eligibility.status === "eligible"
+                ? { label: "✓ Likely Eligible", className: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30" }
+                : eligibility.status === "check-details"
+                ? { label: "? Check Details", className: "bg-amber-500/20 text-amber-300 border-amber-400/30" }
+                : { label: "✕ Not Eligible", className: "bg-rose-500/20 text-rose-300 border-rose-400/30" };
 
             return (
               <div
                 key={scheme.id}
-                className="bg-black/50 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl text-white space-y-5 hover:border-emerald-500/40 transition-all"
+                className={`bg-black/50 backdrop-blur-xl rounded-3xl border p-6 shadow-2xl text-white space-y-5 hover:border-emerald-500/40 transition-all ${
+                  eligibility.status === "not-eligible" ? "opacity-60 border-white/10" : "border-white/20"
+                }`}
               >
                 {/* Header Row */}
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                   <div className="space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
+                      {/* Eligibility badge — most prominent */}
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${eligibilityBadge.className}`}>
+                        {eligibilityBadge.label}
+                      </span>
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">
                         {scheme.level} Scheme
                       </span>
@@ -235,6 +377,15 @@ export const SchemeMatcher: React.FC = () => {
                     <h3 className="text-lg sm:text-xl font-bold font-display text-white tracking-tight">
                       {scheme.title}
                     </h3>
+
+                    {/* Eligibility reason — one-line human explanation */}
+                    <p className={`text-xs font-medium flex items-center gap-1.5 ${
+                      eligibility.status === "eligible" ? "text-emerald-400" :
+                      eligibility.status === "check-details" ? "text-amber-400" :
+                      "text-rose-400"
+                    }`}>
+                      <span>{eligibility.reason}</span>
+                    </p>
 
                     <p className="text-xs text-emerald-300 font-medium flex items-center gap-1.5">
                       <Building2 className="w-3.5 h-3.5 text-emerald-400" />

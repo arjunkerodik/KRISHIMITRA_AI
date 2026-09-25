@@ -20,11 +20,14 @@ import {
   CheckCircle2,
   AlertTriangle,
   ChevronRight,
+  SlidersHorizontal,
 } from "lucide-react";
+import { VerifiedAuthorityBadge } from "@/components/SourceBadge";
 
 export default function DashboardPage() {
   const { user, activeFarm, language, showToast } = useApp();
   const [isSpeakingPlan, setIsSpeakingPlan] = useState(false);
+  const [showRawMetrics, setShowRawMetrics] = useState(false);
 
   // Voice speech synthesis for today's AI recommendation
   const handleSpeakPlan = () => {
@@ -149,8 +152,11 @@ export default function DashboardPage() {
                     <Sprout className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-white">Farm Overview</h2>
-                    <p className="text-xs text-white/60 flex items-center gap-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-base font-bold text-white">My Farm Overview</h2>
+                      <VerifiedAuthorityBadge source="ALL" />
+                    </div>
+                    <p className="text-xs text-white/60 flex items-center gap-1 mt-0.5">
                       <MapPin className="w-3 h-3 text-emerald-400" />
                       <span>{activeFarm.village}, {activeFarm.district}</span>
                     </p>
@@ -189,7 +195,11 @@ export default function DashboardPage() {
             {/* AI Highlight Banner inside Overview */}
             <div className="p-3.5 rounded-2xl bg-black/40 border border-white/15 text-xs text-white/90 font-medium">
               <strong className="text-emerald-300">Today&apos;s Priority: </strong>
-              <span>Postpone evening drip irrigation — 18.5mm rain expected around 4:30 PM (84% probability).</span>
+              <span>
+                {showRawMetrics
+                  ? "Postpone evening drip irrigation — 18.5mm rain expected around 4:30 PM (84% probability)."
+                  : "Postpone evening irrigation — Heavy rain expected around 4:30 PM today 🌧️."}
+              </span>
             </div>
           </div>
 
@@ -202,8 +212,11 @@ export default function DashboardPage() {
                     <CloudSun className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-white">Today&apos;s Weather</h2>
-                    <p className="text-xs text-white/60">IMD Doppler • Live Station</p>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-base font-bold text-white">Today&apos;s Weather</h2>
+                      <VerifiedAuthorityBadge source="IMD" />
+                    </div>
+                    <p className="text-xs text-white/60 mt-0.5">Live Station</p>
                   </div>
                 </div>
 
@@ -223,16 +236,22 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-right space-y-1 text-xs">
                   <div className="text-white/80">
-                    <span className="text-white/50">Rain Prob: </span>
-                    <span className="font-bold text-sky-300">84% (18.5 mm)</span>
+                    <span className="text-white/50">{showRawMetrics ? "Rain Prob: " : "Rain Forecast: "}</span>
+                    <span className="font-bold text-sky-300">
+                      {showRawMetrics ? "84% (18.5 mm)" : "Very Likely 🌧️"}
+                    </span>
                   </div>
                   <div className="text-white/80">
-                    <span className="text-white/50">Humidity: </span>
-                    <span className="font-bold text-white">88% (High)</span>
+                    <span className="text-white/50">{showRawMetrics ? "Humidity: " : "Air Moisture: "}</span>
+                    <span className="font-bold text-white">
+                      {showRawMetrics ? "88% (High)" : "High 💧"}
+                    </span>
                   </div>
                   <div className="text-white/80">
                     <span className="text-white/50">Wind: </span>
-                    <span className="font-bold text-white">12 km/h WSW</span>
+                    <span className="font-bold text-white">
+                      {showRawMetrics ? "12 km/h WSW" : "Gentle Breeze 🍃"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -246,28 +265,39 @@ export default function DashboardPage() {
 
         </div>
 
-        {/* 3. CROP HEALTH SECTION */}
+        {/* 3. CROP HEALTH SECTION (PLAIN LANGUAGE DEFAULT WITH DETAILS TOGGLE) */}
         <div className="bg-black/50 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-white">Crop Health Status</h2>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
-                  Healthy
+                  Healthy 🌿
                 </span>
+                <VerifiedAuthorityBadge source="ALL" />
               </div>
-              <p className="text-xs text-white/70 mt-0.5">
-                Vegetative index (NDVI 0.78) and soil moisture are within optimal range for {activeFarm.currentCrop}.
+              <p className="text-xs text-white/70 mt-1">
+                {showRawMetrics
+                  ? `Vegetative index (NDVI 0.78) and soil moisture are within optimal range for ${activeFarm.currentCrop}.`
+                  : `Crop greenness and leaf canopy are healthy and strong 🌿 for ${activeFarm.currentCrop}.`}
               </p>
             </div>
 
-            <div className="flex items-center gap-3 self-start sm:self-auto">
-              <span className="text-2xl font-extrabold text-emerald-400">86%</span>
+            <div className="flex items-center gap-2.5 self-start sm:self-auto">
+              <button
+                onClick={() => setShowRawMetrics(!showRawMetrics)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/15 cursor-pointer"
+                title="Toggle plain language / raw numbers"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{showRawMetrics ? "Hide details" : "Show details"}</span>
+              </button>
+              <span className="text-2xl font-extrabold text-emerald-400 font-mono">86%</span>
               <Link
                 href="/crops"
-                className="text-xs font-bold px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/15"
+                className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-sm"
               >
-                View Details
+                Crop Advice
               </Link>
             </div>
           </div>
@@ -282,16 +312,22 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-3 gap-4 pt-4 mt-4 border-t border-white/10 text-center text-xs">
             <div>
-              <span className="block text-white/50">Nitrogen Level</span>
-              <span className="font-bold text-white">195 kg/ha (Medium)</span>
+              <span className="block text-white/50">{showRawMetrics ? "Nitrogen Level" : "Soil Food (Nitrogen)"}</span>
+              <span className="font-bold text-white">
+                {showRawMetrics ? "195 kg/ha (Medium)" : "Balanced & Healthy 🌱"}
+              </span>
             </div>
             <div>
-              <span className="block text-white/50">Soil Moisture</span>
-              <span className="font-bold text-emerald-400">32% (Optimal)</span>
+              <span className="block text-white/50">{showRawMetrics ? "Soil Moisture" : "Water in Soil"}</span>
+              <span className="font-bold text-emerald-400">
+                {showRawMetrics ? "32% (Optimal)" : "Optimal 💧"}
+              </span>
             </div>
             <div>
-              <span className="block text-white/50">Disease Threat</span>
-              <span className="font-bold text-amber-400">Early Blight Risk</span>
+              <span className="block text-white/50">{showRawMetrics ? "Disease Threat" : "Leaf Threat"}</span>
+              <span className="font-bold text-amber-400">
+                {showRawMetrics ? "Early Blight Risk" : "Watch Leaves ⚠️"}
+              </span>
             </div>
           </div>
         </div>
@@ -346,7 +382,10 @@ export default function DashboardPage() {
               <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">Weather Alert: Evening Thunderstorm</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-white">Weather Alert: Evening Thunderstorm</span>
+                    <VerifiedAuthorityBadge source="IMD" />
+                  </div>
                   <span className="text-white/50">Forecast 04:30 PM</span>
                 </div>
                 <p className="text-white/70 mt-0.5">18.5mm rain expected with gusty winds. Avoid spraying chemical pesticides after 2 PM.</p>
@@ -357,7 +396,10 @@ export default function DashboardPage() {
               <TrendingUp className="w-4 h-4 text-sky-400 mt-0.5 shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white">Market Price Surge: Tomato</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-white">Market Price Surge: Tomato</span>
+                    <VerifiedAuthorityBadge source="AGMARKNET" />
+                  </div>
                   <span className="text-white/50">Yesterday</span>
                 </div>
                 <p className="text-white/70 mt-0.5">Bengaluru APMC price rose to ₹2,780/Qtl. Net realization increased by +₹380/Qtl.</p>

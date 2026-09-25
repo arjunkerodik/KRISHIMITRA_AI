@@ -26,6 +26,12 @@ import {
   Layers,
   MapPin,
   Clock,
+  LayoutDashboard,
+  Landmark,
+  ShoppingBag,
+  Settings,
+  Shield,
+  MoreHorizontal,
 } from "lucide-react";
 
 interface HeaderProps {
@@ -60,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [timeStr, setTimeStr] = useState<string>("");
 
   useEffect(() => {
@@ -89,15 +96,22 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const navLinks = [
-    { href: "/", label: t.nav?.overview || "Overview" },
-    { href: "/dashboard", label: t.nav?.digitalTwin || "Digital Twin" },
-    { href: "/schemes", label: t.nav?.schemes || "Govt Schemes" },
-    { href: "/market", label: t.nav?.market || "Mandi Rates" },
-    { href: "/marketplace", label: t.nav?.marketplace || "Marketplace" },
-    { href: "/credits", label: t.nav?.credits || "Credits & Rewards" },
-    { href: "/transparency", label: t.nav?.transparency || "Provenance" },
-    { href: "/admin", label: t.nav?.admin || "Governance" },
+  const primaryNavLinks = [
+    { href: "/", label: t.nav?.overview || "Home" },
+    { href: "/farmtalk", label: t.nav?.farmtalk || "Ask AI (FarmTalk)" },
+    { href: "/crops", label: t.nav?.cropAdvisor || "My Crop" },
+    { href: "/market", label: t.nav?.market || "Market" },
+  ];
+
+  const moreLinks = [
+    { href: "/dashboard", label: t.nav?.digitalTwin || "My Farm", icon: LayoutDashboard, desc: "Field status & live advisory" },
+    { href: "/schemes", label: t.nav?.schemes || "Govt Schemes", icon: Landmark, desc: "Subsidies & DBT benefits" },
+    { href: "/marketplace", label: t.nav?.marketplace || "Marketplace", icon: ShoppingBag, desc: "Seeds, fertilizers & inputs" },
+    { href: "/credits", label: t.nav?.credits || "Credits & Rewards", icon: Coins, desc: "Earn tokens & claim vouchers" },
+    { href: "/settings", label: t.nav?.settings || "Settings", icon: Settings, desc: "Language & farmer profile" },
+    ...(role === "admin"
+      ? [{ href: "/admin", label: t.nav?.admin || "Admin Desk", icon: Shield, desc: "Price feed & verification moderation" }]
+      : []),
   ];
 
   const languages: { code: Language; label: string; native: string }[] = [
@@ -123,41 +137,44 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-50 w-full bg-slate-950/85 backdrop-blur-2xl border-b border-slate-800/80 text-white transition-all shadow-[0_4px_30px_rgba(0,0,0,0.5)] pt-[max(0rem,env(safe-area-inset-top))]">
       
-      {/* 1. TOP TELEMETRY STRIP (AlphaEduHub Command Center Aesthetic) */}
+      {/* 1. TOP STATUS STRIP — plain language, no jargon */}
       <div className="hidden md:flex items-center justify-between px-4 sm:px-6 lg:px-8 py-1 bg-slate-900/90 border-b border-slate-800/60 text-[10px] font-mono text-slate-400 tracking-wider">
         <div className="flex items-center gap-4">
+          {/* Connection status */}
           <div className={`flex items-center gap-1.5 font-bold ${offlineStatus?.isOffline ? "text-amber-400" : "text-emerald-400"}`}>
             <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${offlineStatus?.isOffline ? "bg-amber-400" : "bg-emerald-400"}`}></span>
               <span className={`relative inline-flex rounded-full h-2 w-2 ${offlineStatus?.isOffline ? "bg-amber-500" : "bg-emerald-500"}`}></span>
             </span>
             <span>
-              {offlineStatus?.isOffline ? "FIELD MODE: OFFLINE CACHE ACTIVE" : (t.telemetry?.satelliteStatus || "SATELLITE TELEMETRY: ACTIVE")}
+              {offlineStatus?.isOffline
+                ? `Offline — showing saved data`
+                : "Mandi prices: Live"}
             </span>
           </div>
           <span className="text-slate-600">|</span>
           <div className="flex items-center gap-1 text-slate-300">
             <MapPin className="w-3 h-3 text-cyan-400" />
-            <span>{t.telemetry?.locationText || "LOC: 15.4292° N, 75.6318° E (GADAG, KA)"}</span>
+            <span>{user?.district || "Gadag, Karnataka"}</span>
           </div>
           <span className="text-slate-600">|</span>
-          <div className="flex items-center gap-1 text-sky-400">
+          <div className="flex items-center gap-1 text-emerald-400">
             <Activity className="w-3 h-3" />
-            <span>{t.telemetry?.mandiSync || "AGMARKNET / e-NAM: LIVE SYNC"}</span>
+            <span>Verified by IMD · AGMARKNET · myScheme</span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-amber-300 font-semibold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
             <Clock className="w-3 h-3" />
-            <span>{timeStr || "IST LIVE"}</span>
+            <span>{timeStr || "IST"}</span>
           </div>
           <Link
             href="/credits"
             className="flex items-center gap-1 text-emerald-300 font-bold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 hover:bg-emerald-900/60 transition-colors"
           >
             <Coins className="w-3 h-3 text-amber-400" />
-            <span>{creditsBalance} {t.telemetry?.credits || "CREDITS"}</span>
+            <span>{creditsBalance} Credits</span>
           </Link>
         </div>
       </div>
@@ -165,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* 2. MAIN NAVIGATION BAR */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
         
-        {/* LEFT: Command Center Logo */}
+        {/* LEFT: App Logo (Farmer Centered) */}
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={toggleMobileMenu}
@@ -183,24 +200,24 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-sans font-extrabold text-base text-white tracking-tight leading-none block group-hover:text-emerald-300 transition-colors">
                 KrishiMitra AI
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 block font-semibold">
-                Operations Command
+              <span className="text-[10px] tracking-wider text-emerald-400 block font-semibold">
+                Smart Farmer Companion
               </span>
             </div>
           </Link>
         </div>
 
-        {/* CENTER: Main Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
-          {navLinks.map((link) => {
+        {/* CENTER: Main Navigation Links (4 Primary Items + More Drawer) */}
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          {primaryNavLinks.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   active
-                    ? "text-cyan-300 bg-cyan-950/60 border border-cyan-500/40 font-mono shadow-[0_0_12px_rgba(6,182,212,0.2)]"
+                    ? "text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.2)] font-mono"
                     : "text-slate-300 hover:text-white hover:bg-slate-800/70 border border-transparent"
                 }`}
               >
@@ -208,6 +225,56 @@ export const Header: React.FC<HeaderProps> = ({
               </Link>
             );
           })}
+
+          {/* More Menu Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowMoreMenu(!showMoreMenu);
+                setShowNotifications(false);
+                setShowLangMenu(false);
+                setShowProfileMenu(false);
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                showMoreMenu || moreLinks.some((l) => isActive(l.href))
+                  ? "text-emerald-300 bg-slate-850 border border-emerald-500/30"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/70 border border-transparent"
+              }`}
+            >
+              <span>More</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreMenu ? "rotate-180" : ""}`} />
+            </button>
+
+            {showMoreMenu && (
+              <div className="absolute left-0 mt-2 w-64 bg-slate-950/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-slate-700/80 p-2 z-50 animate-in fade-in zoom-in-95 duration-100 space-y-1">
+                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Additional Services
+                </div>
+                {moreLinks.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setShowMoreMenu(false)}
+                      className={`flex items-start gap-2.5 p-2 rounded-xl text-xs transition-colors ${
+                        active
+                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                          : "text-slate-200 hover:bg-white/10"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                      <div>
+                        <div className="font-semibold text-white">{item.label}</div>
+                        <div className="text-[10px] text-slate-400 leading-tight">{item.desc}</div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* RIGHT: Actions, Notifications, Language, Profile & CTA */}
@@ -370,47 +437,38 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="absolute right-0 mt-2 w-56 bg-black/85 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/20 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100 text-white">
                 <div className="px-3.5 py-2 border-b border-white/10">
                   <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                  <p className="text-[11px] text-emerald-300 capitalize">{role} • {user.district}</p>
+                  <p className="text-[11px] text-emerald-300 capitalize">{role} · {user.district}</p>
                 </div>
 
                 <div className="py-1">
                   <Link
                     href="/settings"
                     onClick={() => setShowProfileMenu(false)}
-                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-white/85 hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-white/85 hover:bg-white/10 transition-colors touch-target"
                   >
                     <User className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Farmer Profile & Settings</span>
+                    <span>My Profile & Settings</span>
                   </Link>
-
-                  <div className="px-3.5 py-1.5 text-[10px] font-bold text-white/50 uppercase tracking-wider">
-                    Switch Role
-                  </div>
-                  {roles.map((r) => (
-                    <button
-                      key={r.role}
-                      onClick={() => {
-                        setRole(r.role);
-                        setShowProfileMenu(false);
-                      }}
-                      className={`w-full text-left px-3.5 py-1.5 text-xs flex items-center justify-between hover:bg-white/10 transition-colors ${
-                        role === r.role ? "text-emerald-300 font-bold bg-emerald-500/20" : "text-white/80"
-                      }`}
+                  {role === "admin" && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-2 px-3.5 py-2 text-xs text-purple-300 hover:bg-white/10 transition-colors touch-target"
                     >
-                      <span>{r.label}</span>
-                      {role === r.role && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
-                    </button>
-                  ))}
+                      <Shield className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  )}
                 </div>
 
                 <div className="pt-1 border-t border-white/10">
                   <Link
                     href="/login"
                     onClick={() => setShowProfileMenu(false)}
-                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-rose-400 hover:bg-rose-950/40 transition-colors"
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-rose-400 hover:bg-rose-950/40 transition-colors touch-target"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    <span>Sign Out / Switch Account</span>
+                    <span>Sign Out</span>
                   </Link>
                 </div>
               </div>
@@ -422,30 +480,62 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* MOBILE DRAWER NAVIGATION */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/15 bg-black/90 backdrop-blur-2xl px-4 pt-3 pb-6 space-y-1 shadow-2xl animate-in slide-in-from-top-2 duration-150 text-white">
-          {navLinks.map((link) => {
-            const active = isActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setLocalMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  active
-                    ? "text-emerald-300 bg-emerald-500/20 border border-emerald-400/30 font-semibold"
-                    : "text-white/80 hover:bg-white/10"
-                }`}
-              >
-                <span>{link.label}</span>
-              </Link>
-            );
-          })}
+        <div className="lg:hidden border-t border-white/15 bg-black/90 backdrop-blur-2xl px-4 pt-3 pb-6 space-y-3 shadow-2xl animate-in slide-in-from-top-2 duration-150 text-white">
+          <div className="space-y-1">
+            <div className="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              Farmer Menu
+            </div>
+            {primaryNavLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setLocalMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    active
+                      ? "text-emerald-300 bg-emerald-500/20 border border-emerald-400/30 font-semibold"
+                      : "text-white/80 hover:bg-white/10"
+                  }`}
+                >
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
+          </div>
 
-          <div className="pt-3">
+          <div className="pt-2 border-t border-slate-800 space-y-1">
+            <div className="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              More Services
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {moreLinks.map((link) => {
+                const Icon = link.icon;
+                const active = isActive(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setLocalMobileMenuOpen(false)}
+                    className={`flex items-center gap-2 p-2.5 rounded-xl text-xs font-medium transition-colors border ${
+                      active
+                        ? "text-emerald-300 bg-emerald-500/20 border-emerald-400/30 font-semibold"
+                        : "text-white/80 bg-slate-900/60 border-slate-800 hover:bg-white/10"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">{link.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="pt-2">
             <Link
               href="/farmtalk"
               onClick={() => setLocalMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-semibold shadow-md"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm font-semibold shadow-md active:scale-98 transition-transform"
             >
               <Sparkles className="w-4 h-4 text-emerald-100" />
               <span>Ask FarmTalk AI</span>

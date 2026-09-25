@@ -31,21 +31,29 @@ export const AppInstallPrompt: React.FC = () => {
     const iosDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(iosDevice);
 
+    // Only show install prompt AFTER the farmer's first successful session
+    // (not on very first visit — that scares off new users)
+    const firstSessionDone = localStorage.getItem("km_first_session_done");
+    if (!firstSessionDone) return;
+
+    // Don't re-show for 7 days after dismissal
+    const lastDismissed = localStorage.getItem("krishimitra_pwa_dismissed_at");
+    if (lastDismissed) {
+      const daysSince = (Date.now() - parseInt(lastDismissed, 10)) / (1000 * 60 * 60 * 24);
+      if (daysSince < 7) return;
+    }
+
     // Listen for PWA beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Check if user previously dismissed in this session
-      const dismissed = sessionStorage.getItem("krishimitra_pwa_dismissed");
-      if (!dismissed) {
-        setShowBanner(true);
-      }
+      setShowBanner(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    // Show banner on iOS if not dismissed
-    if (iosDevice && !sessionStorage.getItem("krishimitra_pwa_dismissed")) {
+    // Show banner on iOS
+    if (iosDevice) {
       setShowBanner(true);
     }
 
@@ -69,7 +77,7 @@ export const AppInstallPrompt: React.FC = () => {
 
   const handleDismiss = () => {
     setShowBanner(false);
-    sessionStorage.setItem("krishimitra_pwa_dismissed", "true");
+    localStorage.setItem("krishimitra_pwa_dismissed_at", String(Date.now()));
   };
 
   if (isStandalone || !showBanner) return null;

@@ -89,20 +89,20 @@ export default function TransparencyPage() {
         <div className="p-6 rounded-3xl bg-black/50 backdrop-blur-xl border border-white/20 shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
-                <span>SIH Transparency & Compliance Framework</span>
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Verified by IMD / AGMARKNET / myScheme</span>
               </span>
               <span className="text-xs text-white/70">
-                Ethical AI & Data Origin Audit
+                Official Sources & Integrity
               </span>
             </div>
             <h1 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight mt-1 flex items-center gap-2.5">
-              <Scale className="w-7 h-7 text-sky-400" />
-              <span>Data Sources, Provenance & Verification Audit</span>
+              <Scale className="w-7 h-7 text-emerald-400" />
+              <span>Verified Data & Official Sources</span>
             </h1>
             <p className="text-xs sm:text-sm text-white/70 mt-0.5">
-              Full disclosure of official government connectors, API cadences, estimation mathematical formulas, and provider certifications.
+              Full disclosure of official government portals (IMD, AGMARKNET, myScheme), API verification cadences, and certification details.
             </p>
           </div>
 

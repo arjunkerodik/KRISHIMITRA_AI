@@ -16,6 +16,7 @@
     "deploy:firebase": "npx -y firebase-tools@latest deploy --only hosting"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",

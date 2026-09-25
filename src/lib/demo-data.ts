@@ -113,13 +113,38 @@ export interface SoilReport {
   recommendations: string[];
 }
 
-export const DEMO_FARMER = {
+export interface FarmerProfile {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  preferredLanguage: string;
+  role: "farmer" | "admin" | "expert";
+  village: string;
+  taluk: string;
+  district: string;
+  state: string;
+  pincode: string;
+  avatar?: string;
+  memberSince?: string;
+  totalLandAcres: number;
+  landOwnershipType?: "owned" | "leased";
+  primaryCrops?: string[];
+  irrigationType?: "rain-fed" | "borewell" | "canal" | "drip";
+  category?: "general" | "OBC" | "SC" | "ST";
+  whatsappConsent?: boolean;
+  smsConsent?: boolean;
+  verifiedKYC: boolean;
+  badges?: Array<{ title: string; icon: string; description: string }>;
+}
+
+export const DEMO_FARMER: FarmerProfile = {
   id: "farmer_001",
   name: "Ramesh Gowda",
   phone: "+91 98450 12345",
   email: "ramesh.gowda@krishimitra.demo",
-  preferredLanguage: "en" as const,
-  role: "farmer" as const,
+  preferredLanguage: "kn",
+  role: "farmer",
   village: "Narasapura",
   taluk: "Kolar",
   district: "Kolar",
@@ -127,13 +152,31 @@ export const DEMO_FARMER = {
   pincode: "563133",
   avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80",
   memberSince: "May 2023",
-  totalLandAcres: 4.0,
+  totalLandAcres: 2.5,
+  landOwnershipType: "owned",
+  primaryCrops: ["Tomato", "Groundnut"],
+  irrigationType: "drip",
+  category: "OBC",
+  whatsappConsent: true,
+  smsConsent: true,
   verifiedKYC: true,
   badges: [
     { title: "Water Conservation Pioneer", icon: "💧", description: "Saved 120,000L water via Drip Management" },
     { title: "Soil Health Champion", icon: "🌱", description: "Maintained optimal NPK balance for 2 seasons" },
     { title: "Early Pest Detector", icon: "🛡️", description: "Reported and contained leaf curl early" },
   ]
+};
+
+export const DEMO_ADMIN = {
+  id: "admin_001",
+  name: "Dr. B. R. Patil",
+  phone: "+91 94480 99887",
+  email: "admin@krishimitra.gov.in",
+  role: "admin" as const,
+  designation: "Joint Director of Agriculture & Extension, Karnataka",
+  district: "Bengaluru / State Extension",
+  state: "Karnataka",
+  preferredLanguage: "en" as const,
 };
 
 export const DEMO_FARMS: Farm[] = [

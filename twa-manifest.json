@@ -8,26 +8,18 @@
   "navigationColor": "#020617",
   "backgroundColor": "#020617",
   "enableNotifications": true,
-  "startUrl": "/dashboard",
-  "iconUrl": "/favicon.ico",
+  "startUrl": "https://krishimitra-ai.vercel.app/dashboard",
+  "iconUrl": "https://raw.githubusercontent.com/arjunkerodik/KRISHIMITRA_AI/main/public/icon-512.png",
+  "maskableIconUrl": "https://raw.githubusercontent.com/arjunkerodik/KRISHIMITRA_AI/main/public/icon-512.png",
   "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "krishimitra"
+  },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
-  "shortcuts": [
-    {
-      "name": "Leaf Disease Scanner",
-      "shortName": "Scanner",
-      "url": "/disease",
-      "icon": "/favicon.ico"
-    },
-    {
-      "name": "Mandi Arbitrage Rates",
-      "shortName": "Mandi Rates",
-      "url": "/market",
-      "icon": "/favicon.ico"
-    }
-  ],
+  "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "/manifest.json",
+  "webManifestUrl": "https://raw.githubusercontent.com/arjunkerodik/KRISHIMITRA_AI/main/public/manifest.json",
   "fallbackType": "customtabs"
 }

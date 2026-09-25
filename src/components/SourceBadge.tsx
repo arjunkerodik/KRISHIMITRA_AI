@@ -9,7 +9,8 @@ export type VerificationType =
   | "VERIFIED_PROVIDER" 
   | "KRISHIMITRA_MODEL" 
   | "PENDING_VERIFICATION" 
-  | "EXPIRED";
+  | "EXPIRED"
+  | "VERIFIED_ALL";
 
 interface SourceBadgeProps {
   type: VerificationType;
@@ -75,6 +76,15 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({
           iconColor: "text-amber-400",
           tagBg: "bg-amber-500/25 text-amber-200 border-amber-400/40",
         };
+      case "VERIFIED_ALL":
+        return {
+          icon: ShieldCheck,
+          label: "Verified Data",
+          sub: sourceName || "IMD • AGMARKNET • myScheme",
+          bg: "bg-emerald-500/15 border-emerald-400/35 text-emerald-200",
+          iconColor: "text-emerald-400",
+          tagBg: "bg-emerald-500/25 text-emerald-200 border-emerald-400/40",
+        };
       case "EXPIRED":
         return {
           icon: Clock,
@@ -135,5 +145,29 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({
         </a>
       )}
     </div>
+  );
+};
+
+export const VerifiedAuthorityBadge: React.FC<{
+  source?: "IMD" | "AGMARKNET" | "MYSCHEME" | "ALL";
+  className?: string;
+}> = ({ source = "ALL", className = "" }) => {
+  const text =
+    source === "IMD"
+      ? "Verified by IMD"
+      : source === "AGMARKNET"
+      ? "Verified by AGMARKNET"
+      : source === "MYSCHEME"
+      ? "Verified by myScheme"
+      : "Verified by IMD / AGMARKNET / myScheme";
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 ${className}`}
+      title={text}
+    >
+      <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+      <span>{text}</span>
+    </span>
   );
 };

@@ -70,56 +70,56 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6">
               
               {/* Top Pill Label */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-cyan-300 text-xs font-mono font-bold tracking-wide uppercase border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-300 text-xs font-mono font-bold tracking-wide uppercase border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>{t.telemetry?.satelliteStatus || "SOVEREIGN AGRI PLATFORM"}</span>
+                <span>Verified Data Platform</span>
               </div>
 
               {/* Large Heading */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] drop-shadow-md">
                 {t.appName || "KrishiMitra AI"}{" "}
-                <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                  {t.telemetry?.commandCenter || "Operations Command"}
+                <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                  Smart Farm Companion
                 </span>
               </h1>
 
               {/* Description */}
               <p className="text-base sm:text-lg text-slate-200 max-w-2xl leading-relaxed font-medium drop-shadow-sm">
-                {t.appTagline || "Sovereign AI Smart Agriculture & Digital Twin Command Center"}
+                {t.appTagline || "Smart AI Agriculture Companion for Farmers"}
               </p>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3.5 pt-2">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.3)] border border-cyan-400/40 transition-all active:scale-98 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-[0_0_20px_rgba(16,185,129,0.3)] border border-emerald-400/40 transition-all active:scale-98 cursor-pointer"
                 >
-                  <span>{t.nav?.dashboard || "Explore Digital Twin"}</span>
+                  <span>{t.nav?.dashboard || "Go to My Farm"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
 
                 <Link
                   href="/farmtalk"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-850 backdrop-blur-xl border border-cyan-500/40 text-cyan-300 hover:text-white font-bold text-sm shadow-xl transition-all cursor-pointer font-mono"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-850 backdrop-blur-xl border border-emerald-500/40 text-emerald-300 hover:text-white font-bold text-sm shadow-xl transition-all cursor-pointer font-mono"
                 >
-                  <Sparkles className="w-4 h-4 text-cyan-400" />
-                  <span>{t.nav?.farmtalk || "FarmTalk AI"}</span>
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <span>{t.nav?.farmtalk || "Ask AI (FarmTalk)"}</span>
                 </Link>
               </div>
 
               {/* Trust badges */}
               <div className="flex flex-wrap items-center gap-3 pt-4 text-xs font-mono text-slate-300">
-                <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-500/20 shadow-md">
+                <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-md">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>{t.dashboard?.todaysPlan || "Personalized Farm Plan"}</span>
+                  <span>Verified by IMD (Weather)</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-500/20 shadow-md">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-                  <span>{t.telemetry?.mandiSync || "Live APMC Mandi Feeds"}</span>
+                  <span>Verified by AGMARKNET (Mandi)</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-500/20 shadow-md">
+                <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-md">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>{t.schemes?.centralGovt || "Verified DBT Portals"}</span>
+                  <span>Verified by myScheme (DBT)</span>
                 </div>
               </div>
 

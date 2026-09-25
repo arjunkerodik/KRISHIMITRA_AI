@@ -6,391 +6,477 @@ import { useApp } from "@/lib/store";
 import { Language } from "@/lib/i18n";
 import confetti from "canvas-confetti";
 import {
-  Sprout,
-  CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  UploadCloud,
-  Tractor,
+  CheckCircle2,
+  Sprout,
   MapPin,
-  Calendar,
-  Sparkles,
-  Droplets,
-  FlaskConical,
 } from "lucide-react";
+
+// ── Types ──────────────────────────────────────────────────────
+
+interface OnboardingData {
+  preferredLanguage: Language;
+  name: string;
+  village: string;
+  district: string;
+  state: string;
+  landSizeAcres: number | "";
+  primaryCrop: string;
+}
+
+// ── Language options ───────────────────────────────────────────
+
+const LANGUAGES: { code: Language; script: string; name: string; flag: string }[] = [
+  { code: "kn", script: "ಕನ್ನಡ", name: "Kannada", flag: "🇮🇳" },
+  { code: "hi", script: "हिन्दी", name: "Hindi",   flag: "🇮🇳" },
+  { code: "te", script: "తెలుగు", name: "Telugu",   flag: "🇮🇳" },
+  { code: "ta", script: "தமிழ்", name: "Tamil",    flag: "🇮🇳" },
+  { code: "mr", script: "मराठी",  name: "Marathi",  flag: "🇮🇳" },
+  { code: "en", script: "English", name: "English", flag: "🌐" },
+];
+
+// ── Crop grid options ──────────────────────────────────────────
+
+const CROPS = [
+  { id: "tomato",     label: "Tomato",    emoji: "🍅" },
+  { id: "paddy",      label: "Paddy",     emoji: "🌾" },
+  { id: "maize",      label: "Maize",     emoji: "🌽" },
+  { id: "groundnut",  label: "Groundnut", emoji: "🥜" },
+  { id: "cotton",     label: "Cotton",    emoji: "🌿" },
+  { id: "sugarcane",  label: "Sugarcane", emoji: "🎋" },
+  { id: "sunflower",  label: "Sunflower", emoji: "🌻" },
+  { id: "onion",      label: "Onion",     emoji: "🧅" },
+  { id: "potato",     label: "Potato",    emoji: "🥔" },
+  { id: "banana",     label: "Banana",    emoji: "🍌" },
+  { id: "mango",      label: "Mango",     emoji: "🥭" },
+  { id: "coconut",    label: "Coconut",   emoji: "🥥" },
+  { id: "chilli",     label: "Chilli",    emoji: "🌶️" },
+  { id: "brinjal",    label: "Brinjal",   emoji: "🍆" },
+  { id: "wheat",      label: "Wheat",     emoji: "🌾" },
+  { id: "soybean",    label: "Soybean",   emoji: "🫘" },
+];
+
+// ── Labels by language ──────────────────────────────────────────
+
+const STEP_LABELS: Record<Language, {
+  langStep: string;
+  infoStep: string;
+  cropStep: string;
+  doneStep: string;
+  nameLabel: string;
+  villageLabel: string;
+  districtLabel: string;
+  landLabel: string;
+  cropLabel: string;
+  continueBtn: string;
+  backBtn: string;
+}> = {
+  en: {
+    langStep: "Choose your language",
+    infoStep: "Tell us about yourself",
+    cropStep: "What do you grow?",
+    doneStep: "You're all set! 🎉",
+    nameLabel: "Your name",
+    villageLabel: "Village name",
+    districtLabel: "District",
+    landLabel: "Land size (acres)",
+    cropLabel: "Tap your main crop",
+    continueBtn: "Continue",
+    backBtn: "Back",
+  },
+  kn: {
+    langStep: "ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ",
+    infoStep: "ನಿಮ್ಮ ಬಗ್ಗೆ ತಿಳಿಸಿ",
+    cropStep: "ನೀವು ಏನು ಬೆಳೆಯುತ್ತೀರಿ?",
+    doneStep: "ಸಿದ್ಧ! 🎉",
+    nameLabel: "ನಿಮ್ಮ ಹೆಸರು",
+    villageLabel: "ಗ್ರಾಮ",
+    districtLabel: "ಜಿಲ್ಲೆ",
+    landLabel: "ಭೂಮಿ ಗಾತ್ರ (ಎಕರೆ)",
+    cropLabel: "ನಿಮ್ಮ ಮುಖ್ಯ ಬೆಳೆ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ",
+    continueBtn: "ಮುಂದೆ",
+    backBtn: "ಹಿಂದೆ",
+  },
+  hi: {
+    langStep: "अपनी भाषा चुनें",
+    infoStep: "अपने बारे में बताएं",
+    cropStep: "आप क्या उगाते हैं?",
+    doneStep: "तैयार! 🎉",
+    nameLabel: "आपका नाम",
+    villageLabel: "गांव",
+    districtLabel: "जिला",
+    landLabel: "जमीन का आकार (एकड़)",
+    cropLabel: "अपनी मुख्य फसल चुनें",
+    continueBtn: "आगे",
+    backBtn: "वापस",
+  },
+  te: {
+    langStep: "మీ భాష ఎంచుకోండి",
+    infoStep: "మీ గురించి చెప్పండి",
+    cropStep: "మీరు ఏమి పండిస్తారు?",
+    doneStep: "సిద్ధం! 🎉",
+    nameLabel: "మీ పేరు",
+    villageLabel: "గ్రామం",
+    districtLabel: "జిల్లా",
+    landLabel: "భూమి పరిమాణం (ఎకరాలు)",
+    cropLabel: "మీ ప్రధాన పంట నొక్కండి",
+    continueBtn: "కొనసాగించు",
+    backBtn: "వెనకకు",
+  },
+  ta: {
+    langStep: "உங்கள் மொழியை தேர்வு செய்யுங்கள்",
+    infoStep: "உங்களைப் பற்றி சொல்லுங்கள்",
+    cropStep: "நீங்கள் என்ன பயிரிடுகிறீர்கள்?",
+    doneStep: "தயார்! 🎉",
+    nameLabel: "உங்கள் பெயர்",
+    villageLabel: "கிராமம்",
+    districtLabel: "மாவட்டம்",
+    landLabel: "நிலம் அளவு (ஏக்கர்)",
+    cropLabel: "உங்கள் பயிரை தேர்வு செய்யுங்கள்",
+    continueBtn: "தொடரவும்",
+    backBtn: "பின்னால்",
+  },
+  mr: {
+    langStep: "आपली भाषा निवडा",
+    infoStep: "आपल्याबद्दल सांगा",
+    cropStep: "तुम्ही काय पिकवता?",
+    doneStep: "तयार! 🎉",
+    nameLabel: "तुमचे नाव",
+    villageLabel: "गाव",
+    districtLabel: "जिल्हा",
+    landLabel: "जमिनीचा आकार (एकर)",
+    cropLabel: "मुख्य पीक टॅप करा",
+    continueBtn: "पुढे",
+    backBtn: "मागे",
+  },
+};
+
+// ── Component ───────────────────────────────────────────────────
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { addFarm, setLanguage, updateUserProfile } = useApp();
 
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const totalSteps = 14;
-
-  const [formData, setFormData] = useState({
-    name: "Ramesh Gowda",
-    mobile: "+91 98450 12345",
-    location: "Kolar, Karnataka",
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  const [formData, setFormData] = useState<OnboardingData>({
+    preferredLanguage: "kn",
+    name: "",
+    village: "",
+    district: "",
     state: "Karnataka",
-    district: "Kolar",
-    village: "Narasapura",
-    landSize: 2.5,
-    soilType: "Red Sandy Loam",
-    irrigationType: "Drip Irrigation",
-    currentCrop: "Tomato",
-    cropVariety: "Arka Rakshak (F1 Hybrid)",
-    sowingDate: "2026-08-08",
-    preferredLanguage: "en" as Language,
-    soilReportFile: "soil_sample_kolar_2026.pdf",
+    landSizeAcres: "",
+    primaryCrop: "",
   });
 
+  const labels = STEP_LABELS[formData.preferredLanguage];
+
   const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep((prev) => prev + 1);
+    if (currentStep < 4) {
+      if (currentStep === 1) {
+        setLanguage(formData.preferredLanguage);
+      }
+      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
     } else {
-      // Step 14 Completed: Trigger Confetti & Save Farm
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
-      } catch {}
-
-      updateUserProfile({
-        name: formData.name,
-        phone: formData.mobile,
-        village: formData.village,
-        district: formData.district,
-        state: formData.state,
-      });
-
-      addFarm({
-        farmerId: "farmer_001",
-        farmerName: formData.name,
-        name: `${formData.village} - Main Plot`,
-        village: formData.village,
-        district: formData.district,
-        state: formData.state,
-        pincode: "563133",
-        latitude: 13.1367,
-        longitude: 78.1348,
-        areaAcres: Number(formData.landSize),
-        soilType: formData.soilType,
-        irrigationType: formData.irrigationType,
-        waterSource: "Borewell + Pond",
-        currentCrop: formData.currentCrop,
-        cropVariety: formData.cropVariety,
-        sowingDate: formData.sowingDate,
-        cropStage: "Flowering & Early Fruit Set",
-        healthScore: 90,
-        riskScore: 25,
-        boundary: [
-          { lat: 13.1365, lng: 78.1340 },
-          { lat: 13.1375, lng: 78.1342 },
-          { lat: 13.1378, lng: 78.1358 },
-          { lat: 13.1363, lng: 78.1356 },
-        ],
-      });
-
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+      // Step 4 — save & go home
+      completeOnboarding();
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => prev - 1);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
     }
   };
 
+  const completeOnboarding = async () => {
+    try {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    } catch {}
+
+    updateUserProfile({
+      name: formData.name || "Farmer",
+      village: formData.village,
+      district: formData.district,
+      state: formData.state,
+    });
+
+    if (formData.landSizeAcres && formData.primaryCrop) {
+      addFarm({
+        farmerId: "current_user",
+        farmerName: formData.name || "Farmer",
+        name: `${formData.village || "My"} Farm`,
+        village: formData.village,
+        district: formData.district,
+        state: formData.state,
+        pincode: "",
+        latitude: 0,
+        longitude: 0,
+        areaAcres: Number(formData.landSizeAcres),
+        soilType: "Unknown",
+        irrigationType: "rain-fed",
+        waterSource: "Rain",
+        currentCrop: formData.primaryCrop,
+        cropVariety: "",
+        sowingDate: "",
+        cropStage: "Vegetative",
+        healthScore: 80,
+        riskScore: 20,
+        boundary: [],
+      });
+    }
+
+    // Mark onboarding complete in Supabase (best-effort, non-blocking)
+    try {
+      await fetch("/api/auth/complete-onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          preferredLanguage: formData.preferredLanguage,
+          name: formData.name,
+          village: formData.village,
+          district: formData.district,
+          landSizeAcres: formData.landSizeAcres,
+          primaryCrops: formData.primaryCrop ? [formData.primaryCrop] : [],
+        }),
+      });
+    } catch {}
+
+    router.replace("/");
+  };
+
+  // ── Step validations ──────────────────────────────────────
+
+  const canProceed = () => {
+    if (currentStep === 1) return !!formData.preferredLanguage;
+    if (currentStep === 2) return !!formData.name && !!formData.village;
+    if (currentStep === 3) return !!formData.primaryCrop;
+    return true;
+  };
+
+  const progressPct = ((currentStep - 1) / 3) * 100;
+
   return (
-    <div className="min-h-[88vh] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-transparent text-white">
-      <div className="w-full max-w-xl bg-black/50 backdrop-blur-xl rounded-3xl border border-white/20 p-6 sm:p-8 shadow-2xl">
-        
-        {/* Progress bar */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between text-xs font-semibold text-neutral-300 mb-2">
-            <span>Step {currentStep} of {totalSteps}</span>
-            <span className="text-brand-300 font-bold">
-              {Math.round((currentStep / totalSteps) * 100)}% Setup Completed
-            </span>
-          </div>
-          <div className="w-full h-2 bg-black/40 border border-white/10 rounded-full overflow-hidden">
+    <div className="min-h-screen bg-transparent text-white flex flex-col">
+      {/* Progress bar */}
+      <div className="fixed top-0 left-0 right-0 h-1.5 bg-slate-800 z-50">
+        <div
+          className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 max-w-sm mx-auto w-full">
+
+        {/* Step indicator */}
+        <div className="flex items-center gap-1.5 mb-6">
+          {[1, 2, 3, 4].map((s) => (
             <div
-              className="h-full bg-brand-500 transition-all duration-300 rounded-full"
-              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+              key={s}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                s < currentStep
+                  ? "w-6 bg-emerald-500"
+                  : s === currentStep
+                  ? "w-8 bg-emerald-400"
+                  : "w-4 bg-slate-700"
+              }`}
             />
-          </div>
+          ))}
         </div>
 
-        {/* Step Views */}
-        <div className="min-h-[220px] flex flex-col justify-center">
-          {currentStep === 1 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 1: Identity</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                What is your full name?
-              </h2>
+        {/* ── STEP 1: Language ────────────────────────────── */}
+        {currentStep === 1 && (
+          <div className="w-full space-y-5 animate-in fade-in duration-300">
+            <div className="text-center mb-2">
+              <span className="text-3xl mb-2 block">🌐</span>
+              <h1 className="text-xl font-bold text-white">{labels.langStep}</h1>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => setFormData((prev) => ({ ...prev, preferredLanguage: l.code }))}
+                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all touch-target min-h-[80px] ${
+                    formData.preferredLanguage === l.code
+                      ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
+                      : "border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500"
+                  }`}
+                >
+                  <span className="text-2xl font-bold">{l.script}</span>
+                  <span className="text-xs mt-1 text-slate-400">{l.name}</span>
+                  {formData.preferredLanguage === l.code && (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-1" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 2: Name + Village ──────────────────────── */}
+        {currentStep === 2 && (
+          <div className="w-full space-y-4 animate-in fade-in duration-300">
+            <div className="text-center mb-2">
+              <span className="text-3xl mb-2 block">👤</span>
+              <h1 className="text-xl font-bold text-white">{labels.infoStep}</h1>
+            </div>
+
+            <div>
+              <label className="block text-xs text-slate-400 mb-1 font-medium">{labels.nameLabel}</label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Ramesh Gowda"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                placeholder="Ramesh Gowda"
+                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none min-h-[48px] transition-colors"
               />
             </div>
-          )}
 
-          {currentStep === 2 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 2: Contact</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Enter your mobile number
-              </h2>
-              <input
-                type="tel"
-                value={formData.mobile}
-                onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                placeholder="+91 98450 12345"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-400 font-mono"
-              />
-              <p className="text-xs text-neutral-300">Used for MSG91 OTP verification & WhatsApp alerts.</p>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 3: Geography</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Farm GPS / Region
-              </h2>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Narasapura, Kolar (13.1367° N, 78.1348° E)"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
-              />
-            </div>
-          )}
-
-          {currentStep === 4 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 4: State</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Select your state
-              </h2>
-              <select
-                value={formData.state}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/50 text-white focus:outline-none"
-              >
-                <option className="bg-neutral-900 text-white" value="Karnataka">Karnataka</option>
-                <option className="bg-neutral-900 text-white" value="Maharashtra">Maharashtra</option>
-                <option className="bg-neutral-900 text-white" value="Andhra Pradesh">Andhra Pradesh</option>
-                <option className="bg-neutral-900 text-white" value="Tamil Nadu">Tamil Nadu</option>
-                <option className="bg-neutral-900 text-white" value="Telangana">Telangana</option>
-                <option className="bg-neutral-900 text-white" value="Madhya Pradesh">Madhya Pradesh</option>
-                <option className="bg-neutral-900 text-white" value="Punjab">Punjab</option>
-              </select>
-            </div>
-          )}
-
-          {currentStep === 5 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 5: District</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Enter your district
-              </h2>
-              <input
-                type="text"
-                value={formData.district}
-                onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                placeholder="e.g. Kolar"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white"
-              />
-            </div>
-          )}
-
-          {currentStep === 6 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 6: Village</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Village / Gram Panchayat
-              </h2>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1 font-medium">
+                <MapPin className="w-3.5 h-3.5 inline mr-1 text-cyan-400" />
+                {labels.villageLabel}
+              </label>
               <input
                 type="text"
                 value={formData.village}
-                onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                placeholder="e.g. Narasapura"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white"
+                onChange={(e) => setFormData((p) => ({ ...p, village: e.target.value }))}
+                placeholder="Narasapura"
+                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none min-h-[48px] transition-colors"
               />
             </div>
-          )}
 
-          {currentStep === 7 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 7: Land Area</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Total Landholding Size (Acres)
-              </h2>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1 font-medium">{labels.districtLabel}</label>
+              <input
+                type="text"
+                value={formData.district}
+                onChange={(e) => setFormData((p) => ({ ...p, district: e.target.value }))}
+                placeholder="Kolar"
+                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none min-h-[48px] transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-slate-400 mb-1 font-medium">{labels.landLabel}</label>
               <input
                 type="number"
+                inputMode="decimal"
+                value={formData.landSizeAcres}
+                onChange={(e) =>
+                  setFormData((p) => ({ ...p, landSizeAcres: e.target.value === "" ? "" : parseFloat(e.target.value) }))
+                }
+                placeholder="2.5"
                 step="0.5"
-                value={formData.landSize}
-                onChange={(e) => setFormData({ ...formData, landSize: Number(e.target.value) })}
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white"
+                min="0.1"
+                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none min-h-[48px] transition-colors"
               />
+              <p className="text-[10px] text-slate-500 mt-1">Optional — helps personalise govt scheme suggestions</p>
             </div>
-          )}
+          </div>
+        )}
 
-          {currentStep === 8 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 8: Soil Type</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Primary Soil Classification
-              </h2>
-              <select
-                value={formData.soilType}
-                onChange={(e) => setFormData({ ...formData, soilType: e.target.value })}
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/50 text-white"
-              >
-                <option className="bg-neutral-900 text-white" value="Red Sandy Loam">Red Sandy Loam (Optimal for Vegetables)</option>
-                <option className="bg-neutral-900 text-white" value="Black Cotton Clay">Black Cotton Soil (Vertisol)</option>
-                <option className="bg-neutral-900 text-white" value="Alluvial Soil">Alluvial Soil</option>
-                <option className="bg-neutral-900 text-white" value="Laterite Soil">Laterite Soil</option>
-              </select>
+        {/* ── STEP 3: Crop Selection ──────────────────────── */}
+        {currentStep === 3 && (
+          <div className="w-full space-y-4 animate-in fade-in duration-300">
+            <div className="text-center mb-2">
+              <span className="text-3xl mb-2 block">🌱</span>
+              <h1 className="text-xl font-bold text-white">{labels.cropStep}</h1>
+              <p className="text-xs text-slate-400 mt-1">{labels.cropLabel}</p>
             </div>
-          )}
 
-          {currentStep === 9 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 9: Irrigation</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Irrigation Infrastructure
-              </h2>
-              <select
-                value={formData.irrigationType}
-                onChange={(e) => setFormData({ ...formData, irrigationType: e.target.value })}
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/50 text-white"
-              >
-                <option className="bg-neutral-900 text-white" value="Drip Irrigation">Drip Irrigation (In-line pressure regulated)</option>
-                <option className="bg-neutral-900 text-white" value="Micro-Sprinkler">Micro-Sprinkler</option>
-                <option className="bg-neutral-900 text-white" value="Flood / Furrow">Flood / Furrow Irrigation</option>
-                <option className="bg-neutral-900 text-white" value="Rainfed">Rainfed (No assured source)</option>
-              </select>
+            <div className="grid grid-cols-4 gap-2">
+              {CROPS.map((crop) => (
+                <button
+                  key={crop.id}
+                  onClick={() => setFormData((p) => ({ ...p, primaryCrop: crop.id }))}
+                  className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border-2 transition-all touch-target min-h-[72px] ${
+                    formData.primaryCrop === crop.id
+                      ? "border-emerald-400 bg-emerald-500/20 scale-105 shadow-lg shadow-emerald-500/20"
+                      : "border-slate-700 bg-slate-900/60 hover:border-slate-500 active:scale-95"
+                  }`}
+                  aria-label={crop.label}
+                  aria-pressed={formData.primaryCrop === crop.id}
+                >
+                  <span className="text-2xl leading-none">{crop.emoji}</span>
+                  <span className="text-[10px] text-slate-300 mt-1 leading-tight text-center">
+                    {crop.label}
+                  </span>
+                </button>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {currentStep === 10 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 10: Crop</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                What crop are you currently growing?
-              </h2>
-              <input
-                type="text"
-                value={formData.currentCrop}
-                onChange={(e) => setFormData({ ...formData, currentCrop: e.target.value })}
-                placeholder="e.g. Tomato, Groundnut, Maize"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white"
-              />
+        {/* ── STEP 4: Done ────────────────────────────────── */}
+        {currentStep === 4 && (
+          <div className="w-full text-center space-y-5 animate-in fade-in duration-300">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/30">
+              <Sprout className="w-10 h-10 text-white" />
             </div>
-          )}
+            <h1 className="text-2xl font-extrabold text-white">{labels.doneStep}</h1>
+            <p className="text-sm text-slate-300 leading-relaxed max-w-xs mx-auto">
+              {formData.preferredLanguage === "kn"
+                ? "ಕೃಷಿಮಿತ್ರ ನಿಮ್ಮ ಜೊತೆ ಇದೆ. ಪ್ರತಿ ದಿನ ಅತ್ಯುತ್ತಮ ಸಲಹೆ ನೀಡುತ್ತೇವೆ."
+                : formData.preferredLanguage === "hi"
+                ? "KrishiMitra आपके साथ है। हर दिन बेहतर सलाह मिलेगी।"
+                : "KrishiMitra is ready. You'll get daily tips for your crop, mandi prices, and weather alerts."}
+            </p>
 
-          {currentStep === 11 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 11: Variety</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Crop Variety / Hybrid Name
-              </h2>
-              <input
-                type="text"
-                value={formData.cropVariety}
-                onChange={(e) => setFormData({ ...formData, cropVariety: e.target.value })}
-                placeholder="e.g. Arka Rakshak (F1), US-440, TMV 2"
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white"
-              />
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-sm text-left space-y-1.5">
+              {formData.name && (
+                <div className="flex items-center gap-2 text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>{formData.name}</span>
+                </div>
+              )}
+              {formData.village && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-cyan-400" />
+                  <span>{formData.village}, {formData.district}</span>
+                </div>
+              )}
+              {formData.primaryCrop && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-amber-400" />
+                  <span className="capitalize">
+                    {CROPS.find((c) => c.id === formData.primaryCrop)?.emoji}{" "}
+                    {CROPS.find((c) => c.id === formData.primaryCrop)?.label}
+                  </span>
+                </div>
+              )}
             </div>
+
+            <p className="text-[11px] text-slate-500">
+              You can add land size, crop variety & more from Settings later.
+            </p>
+          </div>
+        )}
+
+        {/* ── Navigation buttons ────────────────────────────── */}
+        <div className="flex gap-3 mt-7 w-full">
+          {currentStep > 1 && currentStep < 4 && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-1.5 px-4 py-3 rounded-xl border border-slate-700 text-slate-300 text-sm font-medium hover:bg-slate-800 transition-colors touch-target"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {labels.backBtn}
+            </button>
           )}
-
-          {currentStep === 12 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 12: Calendar</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Sowing / Transplanting Date
-              </h2>
-              <input
-                type="date"
-                value={formData.sowingDate}
-                onChange={(e) => setFormData({ ...formData, sowingDate: e.target.value })}
-                className="w-full text-base font-semibold p-3.5 rounded-xl border border-white/20 bg-black/40 text-white"
-              />
-            </div>
-          )}
-
-          {currentStep === 13 && (
-            <div className="space-y-3 animate-fade-in">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-300">Step 13: Language</span>
-              <h2 className="font-display font-bold text-2xl text-white drop-shadow-md">
-                Preferred AI Language
-              </h2>
-              <div className="grid grid-cols-3 gap-3">
-                {(["en", "hi", "kn"] as const).map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => {
-                      setFormData({ ...formData, preferredLanguage: l });
-                      setLanguage(l);
-                    }}
-                    className={`p-4 rounded-xl border font-bold text-sm transition-all ${
-                      formData.preferredLanguage === l
-                        ? "border-brand-400 bg-brand-500/40 text-white shadow-lg"
-                        : "border-white/20 bg-black/30 text-neutral-300 hover:bg-white/10"
-                    }`}
-                  >
-                    {l === "en" ? "English" : l === "hi" ? "हिन्दी" : "ಕನ್ನಡ"}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {currentStep === 14 && (
-            <div className="space-y-4 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-3xl bg-brand-500/30 border border-brand-400/40 text-brand-300 flex items-center justify-center mx-auto shadow-lg shadow-brand-500/30">
-                <Sparkles className="w-8 h-8 animate-spin" />
-              </div>
-              <h2 className="font-display font-extrabold text-2xl text-white drop-shadow-md">
-                Your Digital Farm is Ready!
-              </h2>
-              <p className="text-xs sm:text-sm text-neutral-200 max-w-md mx-auto">
-                KrishiMitra AI has calibrated weather alerts, APMC market feeds, and today&apos;s personalized farm action plan for {formData.name} in {formData.village}, {formData.district}.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between">
-          <button
-            onClick={handleBack}
-            disabled={currentStep === 1}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-300 disabled:opacity-30 hover:bg-white/10 transition-colors flex items-center gap-1.5 cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" /> Previous
-          </button>
-
           <button
             onClick={handleNext}
-            className="px-6 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-lg shadow-brand-500/30 cursor-pointer"
+            disabled={!canProceed()}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm transition-all active:scale-98 shadow-lg shadow-emerald-900/40 touch-target"
           >
-            <span>{currentStep === totalSteps ? "Enter Dashboard" : "Continue"}</span>
+            <span>{currentStep === 4 ? (formData.preferredLanguage === "kn" ? "ಮುಂದೆ ಹೋಗಿ" : "Go to App") : labels.continueBtn}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
+        <p className="text-[10px] text-slate-600 text-center mt-4">
+          Step {currentStep} of 4 — takes about 60 seconds
+        </p>
       </div>
     </div>
   );

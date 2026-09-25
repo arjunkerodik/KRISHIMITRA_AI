@@ -36,6 +36,16 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Android / Bubblewrap TWA artifacts
+.gradle/
+android.keystore
+app/
+build.gradle
+gradle.properties
+gradle/
+gradlew
+gradlew.bat
+settings.gradle
 # typescript
 *.tsbuildinfo
 next-env.d.ts

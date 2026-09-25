@@ -87,6 +87,51 @@ export default function AdminPortalPage() {
     );
   };
 
+  if (role !== "admin" && role !== "super_admin") {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full p-8 rounded-3xl bg-slate-950/90 backdrop-blur-2xl border border-purple-500/30 shadow-2xl text-center space-y-5">
+          <div className="w-16 h-16 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center mx-auto shadow-lg shadow-purple-500/10">
+            <Shield className="w-8 h-8" />
+          </div>
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold px-2.5 py-0.5 rounded-full bg-purple-950/60 border border-purple-500/30">
+              Admin & Extension Restricted
+            </span>
+            <h2 className="text-xl font-bold text-white mt-2">
+              Administrator Access Required
+            </h2>
+            <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+              This panel is reserved for authorized agricultural extension officers, APMC administrators, and verification moderators.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-slate-400">
+            Current session role: <span className="font-bold text-emerald-400 capitalize">{role}</span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Link
+              href="/"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors border border-slate-700"
+            >
+              Return Home
+            </Link>
+            <button
+              onClick={() => {
+                setRole("admin");
+                showToast("Admin Session Activated", "Switched role to Admin (Extension Officer).", "success");
+              }}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-purple-900/40 transition-all cursor-pointer"
+            >
+              Sign In as Admin
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-transparent text-white p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       

@@ -46,8 +46,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://krishimitra.com"),
-  title: "KrishiMitra AI - Digital Farm Twin & Operations Command Center App",
-  description: "Advanced agricultural digital twin platform with sovereign data provenance, APMC mandi arbitrage, and precision AI decision support.",
+  title: "KrishiMitra AI - Smart Farm Companion & Mandi Advisory",
+  description: "Smart agricultural decision companion with verified AGMARKNET mandi rates, weather alerts, and AI crop advisory.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "KrishiMitra AI App",
-    description: "Digital Farm Twin & Operations Command Center App",
+    description: "Smart Farm Companion & Mandi Advisory",
     url: "https://krishimitra.com",
     siteName: "KrishiMitra AI",
     type: "website",
